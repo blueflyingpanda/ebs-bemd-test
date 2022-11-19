@@ -9,7 +9,7 @@ class Product(BaseModel):
 
 
 class PriceInterval(BaseModel):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
     price = models.FloatField()
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=True)

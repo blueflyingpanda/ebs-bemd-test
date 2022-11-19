@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
+from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -88,7 +88,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 REST_FRAMEWORK = {
-    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%SZ",
+    'DATETIME_FORMAT': "%Y-%m-%d",
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -173,6 +173,9 @@ DEBUG = True
 
 DEBUG_LEVEL = "INFO"
 
+logs_dir = Path(BASE_DIR) / 'logs'
+logs_dir.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -186,11 +189,17 @@ LOGGING = {
             'level': DEBUG_LEVEL,
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
-        }
+        },
+        'file': {
+            'level': DEBUG_LEVEL,
+            'class': 'logging.FileHandler',
+            'filename': logs_dir / 'rest.log',
+            'formatter': 'standard'
+        },
     },
     'loggers': {
         'info': {
-            'handlers': ["console"],
+            'handlers': ["console", 'file'],
             'level': DEBUG_LEVEL,
             'propagate': True
         },
@@ -209,7 +218,10 @@ LOGGING = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ebs',
+        'USER': 'ebs',
+        'PASSWORD': 'password',
+        'HOST': 'localhost'
     }
 }
