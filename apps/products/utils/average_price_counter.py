@@ -1,7 +1,14 @@
 from django.db.models import Q
-from datetime import date
 from apps.products.models import PriceInterval
 from apps.products.utils.exceptions import PriceNotFound
+from dataclasses import dataclass
+from datetime import timedelta
+
+
+@dataclass
+class AverageInfo:
+    price: float
+    days: int
 
 
 class AveragePriceCounter:
@@ -21,7 +28,7 @@ class AveragePriceCounter:
             )
         return self._selected_records
 
-    def get_average(self) -> float:
+    def get_average(self) -> AverageInfo:
         price_sum = 0
         days_sum = 0
         if not self.selected_records:
@@ -36,4 +43,4 @@ class AveragePriceCounter:
             days = end_date - start_date
             price_sum += price.price * days.days
             days_sum += days.days
-        return price_sum / days_sum
+        return AverageInfo(price_sum / days_sum, days_sum)

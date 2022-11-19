@@ -21,7 +21,7 @@ class ProductViewSet(BaseListModelMixin, BaseCreateModelMixin, BaseViewSet):
     queryset = Product.objects.all()
 
     @action(detail=False, methods=['GET'])
-    def get_stats(self, request, *args, **kwargs):
+    def stats(self, request, *args, **kwargs):
         serializer = ProductStatsSerializer(data=request.query_params)
 
         if not serializer.is_valid():
@@ -29,8 +29,9 @@ class ProductViewSet(BaseListModelMixin, BaseCreateModelMixin, BaseViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         avr_counter = AveragePriceCounter(serializer.validated_data)
+        avr_info = avr_counter.get_average()
         try:
-            return Response({"average price": avr_counter.get_average()}, status=status.HTTP_200_OK)
+            return Response({"price": avr_info.price, "days": avr_info.days}, status=status.HTTP_200_OK)
         except PriceNotFound as e:
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
