@@ -226,8 +226,5 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': db_path,
-        'TEST': {
-                'NAME': db_path,
-        }
     }
 }
