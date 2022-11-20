@@ -51,7 +51,6 @@ class PriceIntervalInserter:
         self.queryset.filter(
             start_date__gte=self.interval_data['start_date'], end_date__lte=self.interval_data['end_date']
         ).delete()
-        self.queryset = self.queryset.all()
         if len(self.queryset):
             self._shift_edge_intervals(
                 left_interval=self._get_edge_interval(self.interval_data['start_date']),
@@ -63,16 +62,8 @@ class PriceIntervalInserter:
         last_interval = self.queryset.last()
         if not last_interval.end_date:
             last_interval.end_date = date.max
-            last_interval.save()
-        self.queryset = self.queryset.all()
         if not self.interval_data['end_date']:
             self.interval_data['end_date'] = date.max
-
-    def _convert_max_date_to_null(self):
-        intervals = self.queryset.filter(end_date__gte=date.max)  # equals
-        for interval in intervals:
-            interval.end_date = None
-            interval.save()
 
     def insert_interval(self):
         self.queryset = self.queryset.filter(product=self.interval_data['product']).order_by('start_date')
@@ -81,4 +72,3 @@ class PriceIntervalInserter:
         else:
             self._convert_null_end_date_to_max_date()
             self._insert()
-            self._convert_max_date_to_null()
