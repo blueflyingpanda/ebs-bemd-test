@@ -40,7 +40,10 @@ class AveragePriceCounter:
                 else self.price_inquiry['start_date']
             end_date = price.end_date if price.end_date < self.price_inquiry['end_date'] \
                 else self.price_inquiry['end_date']
-            days = end_date - start_date
+            days = end_date - start_date + timedelta(days=1)
             price_sum += price.price * days.days
             days_sum += days.days
-        return AverageInfo(price_sum / days_sum, days_sum)
+        return AverageInfo(
+            price_sum / days_sum,
+            (self.price_inquiry['end_date'] - self.price_inquiry['start_date'] + timedelta(days=1)).days
+        )
